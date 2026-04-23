@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pygame
 from sys import exit
 
@@ -20,3 +21,21 @@ while True: #game loop
         pygame.display.update()
         clock.tick(60) #60 FPS
 
+=======
+from tkinter import Image
+
+import pygame
+pygame.init()
+size = [1500, 800]
+window = pygame.display.set_mode(size)
+Image = pygame.image.load("download35.png")
+Image = pygame.transform.scale(Image, (1500, 800))
+done = False
+while not done:
+    pygame.display.flip()
+    window.blit(Image, (0,0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+pygame.quit()
+>>>>>>> 3e9ab39400fb68785b813c87393e48a58c96993e
