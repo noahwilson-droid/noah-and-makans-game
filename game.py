@@ -1,7 +1,8 @@
-from tkinter import Image
-
 import pygame
+from sys import exit
 pygame.init()
+
+
 size = [1500, 800]
 window = pygame.display.set_mode(size)
 Image = pygame.image.load("download35.png")
@@ -13,4 +14,12 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-pygame.quit()
+
+clock = pygame.time.Clock() #frame rate
+while True: #game loop
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+
+        pygame.display.update()
+        clock.tick(60)
