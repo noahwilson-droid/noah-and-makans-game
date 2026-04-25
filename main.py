@@ -36,7 +36,7 @@ while run:
     draw_bg()
 
     #calling the movement method from fighters
-    brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT)
+    brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_2)
     #brawler_2.move()
 
     #draw brawlers
