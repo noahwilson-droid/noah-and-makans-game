@@ -19,6 +19,16 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 
+#define fighter variables
+KNIGHT_SIZE = 128
+KNIGHT_SCALE = 3
+KNIGHT_OFFSET = [20, 67]
+KNIGHT_DATA = [KNIGHT_SIZE, KNIGHT_SCALE, KNIGHT_OFFSET]
+SAMURAI_SIZE = 128
+SAMURAI_OFFSET = [80, 67]
+SAMURAI_SCALE = 3
+SAMURAI_DATA = [SAMURAI_SIZE, SAMURAI_SCALE, SAMURAI_OFFSET]
+
 #Background/Setting
 bg_image = pygame.image.load("download35.png").convert_alpha()
 
@@ -43,8 +53,8 @@ def draw_health_bar(health, x, y):
     pygame.draw.rect(screen, YELLOW, (x, y, 400 * ratio, 30))
 
 #create two instances of fighters
-brawler_1 = Brawlers(200, 310, knight_sheet, KNIGHT_ANIMATION_STEPS)
-brawler_2 = Brawlers(700, 310, samurai_sheet, SAMURAI_ANIMATION_STEPS)
+brawler_1 = Brawlers(200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS)
+brawler_2 = Brawlers(700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS)
 
 #game loop
 run = True
@@ -61,7 +71,10 @@ while run:
 
     #calling the movement method from fighters
     brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_2)
-    #brawler_2.move()
+
+    #update brawlers
+    brawler_1.update()
+    brawler_2.update()
 
     #draw brawlers
     brawler_1.draw(screen)
