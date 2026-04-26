@@ -17,7 +17,10 @@ class Brawlers():
         self.jump = False
         self.attacking = False
         self.attack_type = 0
-        self.health = 100
+        self.attack_cooldown = 0
+        self.hit = False
+        self.health = 10
+        self.alive = True
 
     def load_images(self, sprite_sheet, animation_steps):
         #extract images from spritesheet
@@ -63,7 +66,7 @@ class Brawlers():
                 if key[pygame.K_r]:
                     self.attack_type = 1
                 if key[pygame.K_t]:
-                    self.attack_type = 1
+                    self.attack_type = 2
 
         #Inventing Gravity
         self.vel_y += GRAVITY
@@ -85,22 +88,26 @@ class Brawlers():
         else:
             self.flip = True
 
+        #apply attack cooldown
+        if self.attack_cooldown > 0:
+            self.attack_cooldown -= 1
+        
+
         #updates player position
         self.rect.x += dx
         self.rect.y += dy       
 
-    def attack(self, surface, target):
-        self.attacking = True
-        attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
-        if attacking_rect.colliderect(target.rect):
-            target.health -= 10
-
-        pygame.draw.rect(surface, (0, 255, 0), attacking_rect)
 
     #animations
     def update(self):
         #check what action the player is performing
-        if self.attacking == True:
+        if self.health <= 0:
+            self.health = 0
+            self.alive = False
+            self.update_action(2) #2:death
+        elif self.hit == True:
+            self.update_action(3) #3:Hurt
+        elif self.attacking == True:
             if self.attack_type == 1:
                 self.update_action(0) #0:Attack1
             elif self.attack_type == 2:
@@ -112,7 +119,7 @@ class Brawlers():
         else:
             self.update_action(4) #4:idle
 
-        animation_cooldown = 100
+        animation_cooldown = 150
         #updates images
         self.image = self.animation_list[self.action][self.frame_index]
         #Checks if enough time has passed since the last update
@@ -121,11 +128,31 @@ class Brawlers():
             self.update_time = pygame.time.get_ticks()
         #check if the animation has finished
         if self.frame_index >= len(self.animation_list[self.action]):
-            self.frame_index = 0
-            #checks if attack happened
-            if self.action == 0 or self.action == 1:
-                self.attacking = False
+            #check if player died then end animation
+            if self.alive == False:
+                self.frame_index = len(self.animation_list[self.action]) - 1
+            else:
+                self.frame_index = 0
+                #checks if attack happened
+                if self.action == 0 or self.action == 1:
+                    self.attacking = False
+                    self.attack_cooldown = 30
+                #Checking for damage taken
+                if self.action == 3:
+                    self.hit = False
+                    #Cancels attack if hit, No hyperarmor
+                    self.attacking = False
+                    self.attack_cooldown = 20
 
+    def attack(self, surface, target):
+        if self.attack_cooldown == 0:
+            self.attacking = True
+            attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
+            if attacking_rect.colliderect(target.rect):
+                target.health -= 10
+                target.hit = True
+
+            pygame.draw.rect(surface, (0, 255, 0), attacking_rect)
 
 
     def update_action(self, new_action):
