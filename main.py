@@ -1,6 +1,8 @@
 import pygame
+from pygame import mixer
 from brawlers import Brawlers
 
+mixer.init()
 pygame.init()
 
 #Game's Window
@@ -8,7 +10,7 @@ CANVAS_WIDTH = 1000
 CANVAS_HEIGHT = 600
 
 screen = pygame.display.set_mode((CANVAS_WIDTH, CANVAS_HEIGHT))
-pygame.display.set_caption("Battle of Lungunica")
+pygame.display.set_caption("Steel vs Honor")
 
 #Implementing Framerate
 clock = pygame.time.Clock()
@@ -36,12 +38,25 @@ SAMURAI_OFFSET = [80, 67]
 SAMURAI_SCALE = 3
 SAMURAI_DATA = [SAMURAI_SIZE, SAMURAI_SCALE, SAMURAI_OFFSET]
 
+#Music and sounds
+pygame.mixer.music.load("Assets\Sounds\piano-action-combat.ogg")
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(-1, 0.0, 5000)
+sword_fx = pygame.mixer.Sound("Assets\Sounds\sword-attack.wav")
+sword_fx.set_volume(0.2)
+kanata_fx = pygame.mixer.Sound("Assets\Sounds\swing-the-katana.mp3")
+kanata_fx.set_volume(0.9)
+
 #Background/Setting
-bg_image = pygame.image.load("download35.png").convert_alpha()
+bg_image = pygame.image.load("Assets/background/vecteezy_illustration-of-landscape-with-bushes-trees_6081344.jpg").convert_alpha()
 
 #spritesheets
 knight_sheet = pygame.image.load("Assets\Brawlers\knight.png").convert_alpha()
 samurai_sheet = pygame.image.load("Assets\Brawlers\Samurai.png").convert_alpha()
+
+#load victory image and size change
+victory_img = pygame.image.load("Assets/icon/victory.png").convert_alpha()
+victory_resize = pygame.transform.scale_by(victory_img, 0.2)
 
 #Steps of animation in each animation
 KNIGHT_ANIMATION_STEPS = [4, 4, 6, 2, 4, 6, 7]
@@ -69,8 +84,8 @@ def draw_health_bar(health, x, y):
     pygame.draw.rect(screen, YELLOW, (x, y, 400 * ratio, 30))
 
 #create two instances of fighters
-brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS)
-brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS)
+brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS, sword_fx)
+brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS, kanata_fx)
 
 #game loop
 run = True
@@ -81,14 +96,16 @@ while run:
     #drawing the background
     draw_bg()
 
-    #Display of Health Bar
+    #Display of Health Bar and Wins
     draw_health_bar(brawler_1.health, 20, 20)
     draw_health_bar(brawler_2.health, 580, 20)
+    draw_text("Knight: " + str(score[0]), score_font, RED, 20, 60)
+    draw_text("Samurai: " + str(score[1]), score_font, RED, 580, 60)
 
     if intro_count <= 0:
         #calling the movement method from fighters
-        brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_2)
-        brawler_2.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_1)
+        brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_2, round_over)
+        brawler_2.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_1, round_over)
     else:
         #updates the countdown and display of countdown
         draw_text(str(intro_count), count_font, RED, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 3)
@@ -116,7 +133,12 @@ while run:
             round_over = True
             round_over_time = pygame.time.get_ticks()
     else:
-        pass
+        screen.blit(victory_resize, (360, 150))
+        if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
+            round_over = False
+            intro_count = 3
+            brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS, sword_fx)
+            brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS, kanata_fx)
 
     #event handler
     for event in pygame.event.get():
