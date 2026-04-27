@@ -19,6 +19,13 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 
+#define game variables
+intro_count = 3
+last_count_update = pygame.time.get_ticks()
+score = [0, 0] # score count
+round_over = False
+ROUND_OVER_COOLDOWN = 2000
+
 #define fighter variables
 KNIGHT_SIZE = 128
 KNIGHT_SCALE = 3
@@ -40,6 +47,15 @@ samurai_sheet = pygame.image.load("Assets\Brawlers\Samurai.png").convert_alpha()
 KNIGHT_ANIMATION_STEPS = [4, 4, 6, 2, 4, 6, 7]
 SAMURAI_ANIMATION_STEPS = [4, 5, 6, 3, 6, 9, 8]
 
+#font
+count_font = pygame.font.Font("Assets/font/Turok.ttf", 80)
+score_font = pygame.font.Font("Assets/font/Turok.ttf", 30)
+
+#function for drawing drawing text
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x, y))
+
 #function for drawing background
 def draw_bg():
     scaled_bg = pygame.transform.scale(bg_image, (CANVAS_WIDTH, CANVAS_HEIGHT))
@@ -53,8 +69,8 @@ def draw_health_bar(health, x, y):
     pygame.draw.rect(screen, YELLOW, (x, y, 400 * ratio, 30))
 
 #create two instances of fighters
-brawler_1 = Brawlers(200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS)
-brawler_2 = Brawlers(700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS)
+brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS)
+brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS)
 
 #game loop
 run = True
@@ -69,8 +85,17 @@ while run:
     draw_health_bar(brawler_1.health, 20, 20)
     draw_health_bar(brawler_2.health, 580, 20)
 
-    #calling the movement method from fighters
-    brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_2)
+    if intro_count <= 0:
+        #calling the movement method from fighters
+        brawler_1.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_2)
+        brawler_2.move(CANVAS_WIDTH, CANVAS_HEIGHT, screen, brawler_1)
+    else:
+        #updates the countdown and display of countdown
+        draw_text(str(intro_count), count_font, RED, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 3)
+        if (pygame.time.get_ticks() - last_count_update) >= 1000:
+            intro_count -= 1
+            last_count_update = pygame.time.get_ticks()
+            print(intro_count)
 
     #update brawlers
     brawler_1.update()
@@ -79,6 +104,19 @@ while run:
     #draw brawlers
     brawler_1.draw(screen)
     brawler_2.draw(screen)
+
+    #check for player defeat
+    if round_over == False:
+        if brawler_1.alive == False:
+            score[1] += 1
+            round_over = True
+            round_over_time = pygame.time.get_ticks()
+        if brawler_2.alive == False:
+            score[0] += 1
+            round_over = True
+            round_over_time = pygame.time.get_ticks()
+    else:
+        pass
 
     #event handler
     for event in pygame.event.get():

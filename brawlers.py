@@ -1,7 +1,8 @@
 import pygame
 
 class Brawlers():
-    def __init__(self, x, y, flip, data, sprite_sheet, animation_steps):
+    def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps):
+        self.player = player
         self.size = data[0]
         self.image_scale = data[1]
         self.offset = data[2]
@@ -44,29 +45,53 @@ class Brawlers():
         #Keypresses/Inputs
         key = pygame.key.get_pressed()
 
-            #Preventing Spam Attacks
-        if self.attacking == False:
+            #can only perform attacks if not attacking
+        if self.attacking == False and self.alive  == True:
+            #checks Player 1 controls
+            if self.player  == 1:
             #movement
-            if key[pygame.K_a]:
-                dx = -SPEED
-                self.running = True
-            if key[pygame.K_d]:
-                dx = SPEED
-                self.running = True
+                if key[pygame.K_a]:
+                    dx = -SPEED
+                    self.running = True
+                if key[pygame.K_d]:
+                    dx = SPEED
+                    self.running = True
+                #Jump
+                if key[pygame.K_w] and self.jump == False:
+                    self.vel_y = -30
+                    self.jump = True
+                #attacks
+                if key[pygame.K_r] or key [pygame.K_t]:
+                    self.attack(surface, target)
 
-            #Jump
-            if key[pygame.K_w] and self.jump == False:
-                self.vel_y = -30
-                self.jump = True
-            #attacks
-            if key[pygame.K_r] or key [pygame.K_t]:
-                self.attack(surface, target)
+                    #Attack type
+                    if key[pygame.K_r]:
+                        self.attack_type = 1
+                    if key[pygame.K_t]:
+                        self.attack_type = 2
 
-                #Attack type
-                if key[pygame.K_r]:
-                    self.attack_type = 1
-                if key[pygame.K_t]:
-                    self.attack_type = 2
+            #checks Player 2 controls
+            if self.player  == 2:
+            #movement
+                if key[pygame.K_LEFT]:
+                    dx = -SPEED
+                    self.running = True
+                if key[pygame.K_RIGHT]:
+                    dx = SPEED
+                    self.running = True
+                #Jump
+                if key[pygame.K_UP] and self.jump == False:
+                    self.vel_y = -30
+                    self.jump = True
+                #attacks
+                if key[pygame.K_KP1] or key [pygame.K_KP2]:
+                    self.attack(surface, target)
+
+                    #Attack type
+                    if key[pygame.K_KP1]:
+                        self.attack_type = 1
+                    if key[pygame.K_KP2]:
+                        self.attack_type = 2
 
         #Inventing Gravity
         self.vel_y += GRAVITY
