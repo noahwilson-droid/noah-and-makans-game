@@ -175,7 +175,11 @@ class Brawlers():
             #execute atack
             self.attacking = True
             self.attack_sound.play()
-            attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
+            if self.flip:
+                attacking_rect = pygame.Rect(self.rect.centerx - 2 * self.rect.width, self.rect.y, 2 * self.rect.width, self.rect.height)
+            else:
+                attacking_rect = pygame.Rect(self.rect.centerx, self.rect.y, 2 * self.rect.width, self.rect.height)
+            #attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
             if attacking_rect.colliderect(target.rect):
                 target.health -= 10
                 target.hit = True
@@ -195,4 +199,19 @@ class Brawlers():
     def draw(self, surface):
         img = pygame.transform.flip(self.image, self.flip, False)
         pygame.draw.rect(surface, (255, 0, 0), self.rect)
-        surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))
+
+    # Support per-animation offsets or a single shared offset
+        if isinstance(self.offset[0], list):
+            offset = self.offset[self.action]
+        else:
+            offset = self.offset
+
+        if self.flip:
+        # When flipped, offset goes in the opposite x direction
+            draw_x = self.rect.x - (self.image.get_width() - (offset[0] * self.image_scale) - self.rect.width)
+        else:
+            draw_x = self.rect.x - (offset[0] * self.image_scale)
+    
+        draw_y = self.rect.y - (offset[1] * self.image_scale)
+        surface.blit(img, (draw_x, draw_y))
+        #surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))

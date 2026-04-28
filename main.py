@@ -34,9 +34,17 @@ KNIGHT_SCALE = 3
 KNIGHT_OFFSET = [20, 67]
 KNIGHT_DATA = [KNIGHT_SIZE, KNIGHT_SCALE, KNIGHT_OFFSET]
 SAMURAI_SIZE = 128
-SAMURAI_OFFSET = [80, 67]
+SAMURAI_OFFSETS = [
+    [40, 67], #attack1
+    [45, 67], #attack2
+    [50, 67], #dead
+    [60, 67], #hurt
+    [20, 67], #idle
+    [55, 67], #jump
+    [30, 67], #run
+]
 SAMURAI_SCALE = 3
-SAMURAI_DATA = [SAMURAI_SIZE, SAMURAI_SCALE, SAMURAI_OFFSET]
+SAMURAI_DATA = [SAMURAI_SIZE, SAMURAI_SCALE, SAMURAI_OFFSETS]
 
 #Music and sounds
 pygame.mixer.music.load("Assets\Sounds\piano-action-combat.ogg")
@@ -60,7 +68,7 @@ victory_resize = pygame.transform.scale_by(victory_img, 0.2)
 
 #Steps of animation in each animation
 KNIGHT_ANIMATION_STEPS = [4, 4, 6, 2, 4, 6, 7]
-SAMURAI_ANIMATION_STEPS = [4, 5, 6, 3, 6, 9, 8]
+SAMURAI_ANIMATION_STEPS = [4, 5, 6, 3, 4, 9, 8]
 
 #font
 count_font = pygame.font.Font("Assets/font/Turok.ttf", 80)
