@@ -1,7 +1,7 @@
 import pygame
 
 class Brawlers():
-    def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, sound):
+    def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, animation_cooldowns, sound):
         self.player = player
         self.size = data[0]
         self.image_scale = data[1]
@@ -10,6 +10,7 @@ class Brawlers():
         self.animation_list = self.load_images(sprite_sheet, animation_steps)
         self.action = 4 #Checks animation type #0:attack1 #1:attack2 #2:dead #3:hurt #4:idle #5:jump #6:run
         self.frame_index = 0
+        self.animation_cooldowns = animation_cooldowns #AI FIXED: Helps with individual animation cooldowns
         self.image = self.animation_list[self.action][self.frame_index]
         self.update_time = pygame.time.get_ticks()
         self.rect = pygame.Rect((x, y, 80, 180))
@@ -145,7 +146,7 @@ class Brawlers():
         else:
             self.update_action(4) #4:idle
 
-        animation_cooldown = 150
+        animation_cooldown = self.animation_cooldowns[self.action]
         #updates images
         self.image = self.animation_list[self.action][self.frame_index]
         #Checks if enough time has passed since the last update
@@ -176,15 +177,15 @@ class Brawlers():
             self.attacking = True
             self.attack_sound.play()
             if self.flip:
-                attacking_rect = pygame.Rect(self.rect.centerx - 2 * self.rect.width, self.rect.y, 2 * self.rect.width, self.rect.height)
+                attacking_rect = pygame.Rect(self.rect.centerx - 2.5 * self.rect.width, self.rect.y, 2.5 * self.rect.width, self.rect.height)
             else:
-                attacking_rect = pygame.Rect(self.rect.centerx, self.rect.y, 2 * self.rect.width, self.rect.height)
+                attacking_rect = pygame.Rect(self.rect.centerx, self.rect.y, 2.5 * self.rect.width, self.rect.height)
             #attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
             if attacking_rect.colliderect(target.rect):
                 target.health -= 10
                 target.hit = True
 
-            pygame.draw.rect(surface, (0, 255, 0), attacking_rect)
+            #pygame.draw.rect(surface, (0, 255, 0), attacking_rect)
 
 
     def update_action(self, new_action):
@@ -198,7 +199,7 @@ class Brawlers():
 
     def draw(self, surface):
         img = pygame.transform.flip(self.image, self.flip, False)
-        pygame.draw.rect(surface, (255, 0, 0), self.rect)
+        #pygame.draw.rect(surface, (255, 0, 0), self.rect)
 
     # Support per-animation offsets or a single shared offset
         if isinstance(self.offset[0], list):

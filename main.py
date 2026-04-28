@@ -34,7 +34,7 @@ KNIGHT_SCALE = 3
 KNIGHT_OFFSET = [20, 67]
 KNIGHT_DATA = [KNIGHT_SIZE, KNIGHT_SCALE, KNIGHT_OFFSET]
 SAMURAI_SIZE = 128
-SAMURAI_OFFSETS = [
+SAMURAI_OFFSETS = [ #AI FIXED: SAMURAI ANIMATIONS DO NOT OFFSET
     [40, 67], #attack1
     [45, 67], #attack2
     [50, 67], #dead
@@ -70,6 +70,11 @@ victory_resize = pygame.transform.scale_by(victory_img, 0.2)
 KNIGHT_ANIMATION_STEPS = [4, 4, 6, 2, 4, 6, 7]
 SAMURAI_ANIMATION_STEPS = [4, 5, 6, 3, 4, 9, 8]
 
+# index order: [attack1, attack2, dead, hurt, idle, jump, run]
+KNIGHT_ANIMATION_COOLDOWNS = [150, 150, 150, 150, 150, 150, 150]
+SAMURAI_ANIMATION_COOLDOWNS = [150, 110, 150, 150, 150, 50, 150]
+#AI FIXED: ALLOWS TWEAKS FOR INDIVIDUAL ANIMATION SPEEDS
+
 #font
 count_font = pygame.font.Font("Assets/font/Turok.ttf", 80)
 score_font = pygame.font.Font("Assets/font/Turok.ttf", 30)
@@ -92,8 +97,8 @@ def draw_health_bar(health, x, y):
     pygame.draw.rect(screen, YELLOW, (x, y, 400 * ratio, 30))
 
 #create two instances of fighters
-brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS, sword_fx)
-brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS, kanata_fx)
+brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS, KNIGHT_ANIMATION_COOLDOWNS, sword_fx)
+brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS, SAMURAI_ANIMATION_COOLDOWNS, kanata_fx)
 
 #game loop
 run = True
@@ -145,8 +150,8 @@ while run:
         if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
             round_over = False
             intro_count = 3
-            brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS, sword_fx)
-            brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS, kanata_fx)
+            brawler_1 = Brawlers(1, 200, 310, False, KNIGHT_DATA, knight_sheet, KNIGHT_ANIMATION_STEPS, KNIGHT_ANIMATION_COOLDOWNS, sword_fx)
+            brawler_2 = Brawlers(2, 700, 310, True, SAMURAI_DATA, samurai_sheet, SAMURAI_ANIMATION_STEPS, KNIGHT_ANIMATION_COOLDOWNS, kanata_fx)
 
     #event handler
     for event in pygame.event.get():
