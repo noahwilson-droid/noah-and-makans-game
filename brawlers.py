@@ -182,7 +182,7 @@ class Brawlers():
                 attacking_rect = pygame.Rect(self.rect.centerx, self.rect.y, 2.5 * self.rect.width, self.rect.height)
             #attacking_rect = pygame.Rect(self.rect.centerx - (2 * self.rect.width * self.flip), self.rect.y, 2 * self.rect.width, self.rect.height)
             if attacking_rect.colliderect(target.rect):
-                target.health -= 10
+                target.health -= 20
                 target.hit = True
 
             #pygame.draw.rect(surface, (0, 255, 0), attacking_rect)
